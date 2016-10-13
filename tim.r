@@ -1,10 +1,11 @@
 splineAnalyze<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw = FALSE, 
     plotWindows = FALSE, method = 3) 
 {
+
+
+    # finding x intercept for identification of inflection point
     roots <- function(data) {
-        data1 <- c(NA, data[1:{
-            length(data) - 1
-        }])
+        data1 <- c(NA, data[1:{length(data) - 1}])
         data2 <- data
         posneg <- which(data1 > 0 & data2 < 0) - 0.5
         negpos <- which(data1 < 0 & data2 > 0) - 0.5
@@ -12,17 +13,21 @@ splineAnalyze<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw =
         roots <- sort(c(posneg, negpos, zero))
         return(roots)
     }
+    
+    
+    #data input and cleaning
     rawData <- data.frame(Pos = map, Y = Y)
     data <- rawData[which(is.na(rawData$Y) == FALSE), ]
-    pspline <- smooth.Pspline(data[, 1], data[, 2], norder = 2, 
-        method = method)
+    
+    #
+    pspline <- smooth.Pspline(data[, 1], data[, 2], norder = 2, method = method)
     predict <- predict(pspline, seq(0, max(pspline$x), by = smoothness))
-    psplinederiv <- predict(pspline, seq(0, max(pspline$x), by = smoothness), 
-        nderiv = 2)
+    psplinederiv <- predict(pspline, seq(0, max(pspline$x), by = smoothness), nderiv = 2)
     psplineInflection <- roots(psplinederiv) * smoothness
-    print(paste("Total number of windows = ", length(psplineInflection) + 
-        1))
+    
+    print(paste("Total number of windows = ", length(psplineInflection) + 1))
     print(" ---- Computing window statistics ----")
+    
     if (is.na(s2)) 
         s2 <- var(Y)
     if (is.na(mean)) 
