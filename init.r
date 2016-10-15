@@ -1,5 +1,6 @@
 library(pspline)
 library(GenWin)
+library(doSNOW)
 library(rsconnect)
 require(tictoc)
 

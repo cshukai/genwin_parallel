@@ -28,22 +28,24 @@ splineAnalyze<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw =
     print(paste("Total number of windows = ", length(psplineInflection) + 1))
     print(" ---- Computing window statistics ----")
     
-    if (is.na(s2)) 
+    if (is.na(s2)){ 
         s2 <- var(Y)
-    if (is.na(mean)) 
+        }
+    if (is.na(mean)){
         mean <- mean(Y, na.rm = TRUE)
+        }
+        
     cat(1, "of", length(psplineInflection) + 1, "\r")
-    Distinct <- data.frame(WindowStart = rep(NA, length(psplineInflection) + 
-        1), WindowStop = NA, SNPcount = NA, MeanY = NA, Wstat = NA)
+    
+    #generating of windows
+    Distinct <- data.frame(WindowStart = rep(NA, length(psplineInflection) + 1), WindowStop = NA, SNPcount = NA, MeanY = NA, Wstat = NA)
     Distinct$WindowStart[1] <- min(pspline$x)
     Distinct$WindowStop[1] <- psplineInflection[1]
     Distinct$SNPcount[1] <- length(which(data[, 1] <= psplineInflection[1]))
-    Distinct$MeanY[1] <- mean(data[which(data[, 1] <= psplineInflection[1]), 
-        2], na.rm = TRUE)
-    Distinct$Wstat[1] <- {
-        mean(data[which(data[, 1] <= psplineInflection[1]), 2], 
-            na.rm = TRUE) - mean
-    }/sqrt(s2/length(which(data[, 1] <= psplineInflection[1])))
+    Distinct$MeanY[1] <- mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE)
+    Distinct$Wstat[1] <- {mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] <= psplineInflection[1])))
+    
+    
     for (i in 2:length(psplineInflection)) {
         cat(i, "of", length(psplineInflection) + 1, "\r")
         Distinct$WindowStart[i] <- psplineInflection[i - 1]
@@ -52,13 +54,10 @@ splineAnalyze<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw =
             1] & data[, 1] <= psplineInflection[i]))
         Distinct$MeanY[i] <- mean(data[which(data[, 1] >= psplineInflection[i - 
             1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE)
-        Distinct$Wstat[i] <- {
-            mean(data[which(data[, 1] >= psplineInflection[i - 
-                1] & data[, 1] <= psplineInflection[i]), 2], 
-                na.rm = TRUE) - mean
-        }/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 
-            1] & data[, 1] <= psplineInflection[i])))
+        Distinct$Wstat[i] <- {mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i])))
     }
+    
+    
     i <- i + 1
     cat(i, "of", length(psplineInflection) + 1, "\r")
     Distinct$WindowStart[i] <- psplineInflection[i - 1]
@@ -87,4 +86,4 @@ splineAnalyze<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw =
     }
     return(list(rawSpline = pspline, breaks = psplineInflection, 
         windowData = Distinct))
-}
+  }
