@@ -35,57 +35,34 @@ splineAnalyze2<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw 
         mean <- mean(Y, na.rm = TRUE)
         }
         
-    cat(1, "of", length(psplineInflection) + 1, "\r")
-    
+
     #generating of windows
     Distinct <- data.frame(WindowStart =min(pspline$x) , WindowStop = psplineInflection[1], SNPcount = length(which(data[, 1] <= psplineInflection[1])), MeanY = mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE), Wstat ={mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] <= psplineInflection[1]))))
-    
- 
 
-   
-    
-   
-    #,.combine="rbind",.multicombine=T
      x=foreach(i = 2:length(psplineInflection),.combine="rbind") %dopar% {
         y=c(WindowStart=psplineInflection[i - 1],WindowStop=psplineInflection[i],SNPcount=length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i])),MeanY=mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE),Wstat={mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]))))
         return(y)
-        # Distinct$WindowStart[i] <- psplineInflection[i - 1]
-        # Distinct$WindowStop[i] <- psplineInflection[i]
-        # Distinct$SNPcount[i] <- length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]))
-        # Distinct$MeanY[i] <- mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE)
-        # Distinct$Wstat[i] <- {mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i])))
-        # return(Distinct)
+       
     }
 
-    Distinct=rbind(Distinct,x)
-    return(Distinct)
     
-    # i <- i + 1
-    # cat(i, "of", length(psplineInflection) + 1, "\r")
-    # Distinct$WindowStart[i] <- psplineInflection[i - 1]
-    # Distinct$WindowStop[i] <- max(data$Pos)
-    # Distinct$SNPcount[i] <- length(which(data[, 1] >= psplineInflection[i - 
-    #     1]))
-    # Distinct$MeanY[i] <- mean(data[which(data[, 1] >= psplineInflection[i - 
-    #     1]), 2], na.rm = TRUE)
-    # Distinct$Wstat[i] <- {
-    #     mean(data[which(data[, 1] >= psplineInflection[i - 1]), 
-    #         2], na.rm = TRUE) - mean
-    # }/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 
-    #     1])))
-    # print(" ---- done ---- ")
-    # if (plotRaw == TRUE & plotWindows == TRUE) 
-    #     par(mfrow = c(2, 1))
-    # if (plotRaw == TRUE) {
-    #     plot(data, xlab = "Position (bp)", ylab = "Raw values")
-    #     lines(seq(0, max(pspline$x), by = smoothness), predict, 
-    #         col = "red")
-    # }
-    # if (plotWindows == TRUE) {
-    #     plot((Distinct$WindowStop - Distinct$WindowStart)/2 + 
-    #         Distinct$WindowStart, Distinct$Wstat, xlab = "Position (bp)", 
-    #         ylab = "Spline Wstat", pch = 19)
-    # }
-    # return(list(rawSpline = pspline, breaks = psplineInflection, 
-    #     windowData = Distinct))
+    i= length(psplineInflection)+1
+    z=c(WindowStart= psplineInflection[i - 1],WindowStop = max(data$Pos),SNPcount =length(which(data[, 1] >= psplineInflection[i - 1])),MeanY = mean(data[which(data[, 1] >= psplineInflection[i - 1]), 2], na.rm = TRUE),Wstat= {mean(data[which(data[, 1] >= psplineInflection[i - 1]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 1]))))
+    Distinct=rbind(Distinct,x,z)
+    
+    
+    if (plotRaw == TRUE & plotWindows == TRUE) 
+        par(mfrow = c(2, 1))
+    if (plotRaw == TRUE) {
+        plot(data, xlab = "Position (bp)", ylab = "Raw values")
+        lines(seq(0, max(pspline$x), by = smoothness), predict, 
+            col = "red")
+    }
+    if (plotWindows == TRUE) {
+        plot((Distinct$WindowStop - Distinct$WindowStart)/2 + 
+            Distinct$WindowStart, Distinct$Wstat, xlab = "Position (bp)", 
+            ylab = "Spline Wstat", pch = 19)
+    }
+    return(list(rawSpline = pspline, breaks = psplineInflection, 
+        windowData = Distinct))
   }
