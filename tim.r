@@ -38,24 +38,26 @@ splineAnalyze2<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw 
     cat(1, "of", length(psplineInflection) + 1, "\r")
     
     #generating of windows
-    Distinct <- data.frame(WindowStart = rep(NA, length(psplineInflection) + 1), WindowStop = NA, SNPcount = NA, MeanY = NA, Wstat = NA)
-    Distinct$WindowStart[1] <- min(pspline$x)
-    Distinct$WindowStop[1] <- psplineInflection[1]
-    Distinct$SNPcount[1] <- length(which(data[, 1] <= psplineInflection[1]))
-    Distinct$MeanY[1] <- mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE)
-    Distinct$Wstat[1] <- {mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] <= psplineInflection[1])))
+    Distinct <- data.frame(WindowStart =min(pspline$x) , WindowStop = psplineInflection[1], SNPcount = length(which(data[, 1] <= psplineInflection[1])), MeanY = mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE), Wstat ={mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] <= psplineInflection[1]))))
+    
+ 
+
+   
     
    
     #,.combine="rbind",.multicombine=T
-     Distinct=foreach(i = 2:length(psplineInflection)) %dopar% {
-        Distinct$WindowStart[i] <- psplineInflection[i - 1]
-        Distinct$WindowStop[i] <- psplineInflection[i]
-        Distinct$SNPcount[i] <- length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]))
-        Distinct$MeanY[i] <- mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE)
-        Distinct$Wstat[i] <- {mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i])))
-        return(Distinct)
+     x=foreach(i = 2:length(psplineInflection),.combine="rbind") %dopar% {
+        y=c(WindowStart=psplineInflection[i - 1],WindowStop=psplineInflection[i],SNPcount=length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i])),MeanY=mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE),Wstat={mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]))))
+        return(y)
+        # Distinct$WindowStart[i] <- psplineInflection[i - 1]
+        # Distinct$WindowStop[i] <- psplineInflection[i]
+        # Distinct$SNPcount[i] <- length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]))
+        # Distinct$MeanY[i] <- mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE)
+        # Distinct$Wstat[i] <- {mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i])))
+        # return(Distinct)
     }
 
+    Distinct=rbind(Distinct,x)
     return(Distinct)
     
     # i <- i + 1
