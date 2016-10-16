@@ -45,16 +45,8 @@ splineAnalyze2<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw 
     Distinct$MeanY[1] <- mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE)
     Distinct$Wstat[1] <- {mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] <= psplineInflection[1])))
     
-    # put<-function(j,Distinct,data,psplineInflection){
-    #     Distinct$WindowStart[j] <- psplineInflection[j - 1]
-    #     Distinct$WindowStop[j] <- psplineInflection[j]
-    #     Distinct$SNPcount[j] <- length(which(data[, 1] >= psplineInflection[j - 1] & data[, 1] <= psplineInflection[j]))
-    #     Distinct$MeanY[j] <- mean(data[which(data[, 1] >= psplineInflection[j - 1] & data[, 1] <= psplineInflection[j]), 2], na.rm = TRUE)
-    #     Distinct$Wstat[j] <- {mean(data[which(data[, 1] >= psplineInflection[j - 1] & data[, 1] <= psplineInflection[j]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[j - 1] & data[, 1] <= psplineInflection[j])))
-    # }
+   
     
-    #exportVariable=c("Distinct","data","psplineInflection")
-    #foreach(i = 2:length(psplineInflection)) %dopar% {put(i,Distinct,data,psplineInflection)}
     foreach(i = 2:length(psplineInflection),.combine="rbind") %dopar% {
         Distinct$WindowStart[i] <- psplineInflection[i - 1]
         Distinct$WindowStop[i] <- psplineInflection[i]
