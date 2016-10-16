@@ -8,8 +8,12 @@ toc()
 
 
 ######################test2################################
+threads= 12
+cl=makeCluster(threads)
+registerDoSNOW(cl)
+
 tic()
-chr6Spline <- splineAnalyze2(Y=chr6$Fst,map=chr6$Position,smoothness=100,plotRaw=TRUE,plotWindows=TRUE,method=4)
+chr6Spline2 <- splineAnalyze2(Y=chr6$Fst,map=chr6$Position,smoothness=100,plotRaw=TRUE,plotWindows=TRUE,method=4)
 toc()
-#stopCluster(cl)
+stopCluster(cl)
 ##

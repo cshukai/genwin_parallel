@@ -46,17 +46,17 @@ splineAnalyze2<-function (Y, map, smoothness = 100, s2 = NA, mean = NA, plotRaw 
     Distinct$Wstat[1] <- {mean(data[which(data[, 1] <= psplineInflection[1]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] <= psplineInflection[1])))
     
    
-    
-    foreach(i = 2:length(psplineInflection),.combine="rbind") %dopar% {
+    #,.combine="rbind",.multicombine=T
+     Distinct=foreach(i = 2:length(psplineInflection)) %dopar% {
         Distinct$WindowStart[i] <- psplineInflection[i - 1]
         Distinct$WindowStop[i] <- psplineInflection[i]
         Distinct$SNPcount[i] <- length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]))
         Distinct$MeanY[i] <- mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE)
         Distinct$Wstat[i] <- {mean(data[which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i]), 2], na.rm = TRUE) - mean}/sqrt(s2/length(which(data[, 1] >= psplineInflection[i - 1] & data[, 1] <= psplineInflection[i])))
-
+        return(Distinct)
     }
 
-    
+    return(Distinct)
     
     # i <- i + 1
     # cat(i, "of", length(psplineInflection) + 1, "\r")
