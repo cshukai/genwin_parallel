@@ -53,8 +53,11 @@ cl=makeCluster(threads)
 registerDoSNOW(cl)
 
 tic()
-allChrSplines2=list()
-foreach(k=1:length(length(d)) %dopar% 
-chr6Spline2 <- splineAnalyze2(Y=chr6$Fst,map=chr6$Position,smoothness=100,plotRaw=TRUE,plotWindows=TRUE,method=4)
+allChrSplines2= foreach(k=1:length(d) ,.packages=c("pspline","doSNOW")) %dopar% {
+    thisfile=d[[i]]
+    chrspline <- splineAnalyze2(Y=thisfile[,4],map=thisfile[,3],smoothness=100,plotRaw=TRUE,plotWindows=TRUE,method=4)
+    return(chrspline)
+}
 toc()
 stopCluster(cl)
+#10.786 sec elapsed on lindberg
