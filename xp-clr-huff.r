@@ -26,6 +26,12 @@ for(i in 1:chrNum){
 
 
 ######################fit genwin ######################
-domSpline=splineAnalyze(Y=d_dom_sorted$XPCLR_DOM,map=mean(d_dom_sorted$winstart+d_dom_sorted$winend),smoothness=100,plotRaw=TRUE,plotWindows=TRUE,method=4)
 
+for(i in 1:chrNum){
+
+this_imp=chr_spec_imp[[i]]
+
+domSpline=splineAnalyze(Y=chr_spec_dom[[i]]$XPCLR_DOM,map=rowMeans(cbind(chr_spec_dom[[i]]$winstart,chr_spec_dom[[i]]$winend)),smoothness=100,plotRaw=TRUE,plotWindows=TRUE,method=4)
+    
+}
 save.image("xpclr.RData")
