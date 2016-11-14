@@ -26,19 +26,32 @@ for(i in 1:chrNum){
 
 
 ######################fit genwin ######################
-dom_win=list()
-imp_win=list()
+dom_win=list() # for futher retrival of window size
+imp_win=list() 
 for(i in 1:chrNum){
+    # taking the midpoint as position
+    domSpline=splineAnalyze(Y=chr_spec_dom[[i]]$XPCLR_DOM,map=rowMeans(cbind(chr_spec_dom[[i]]$winstart,chr_spec_dom[[i]]$winend)),smoothness=100,plotRaw=F,plotWindows=F,method=4)
+    dom_win[[i]]=domSpline$windowData[,c("WindowStart","WindowStop")]
 
-
-domSpline=splineAnalyze(Y=chr_spec_dom[[i]]$XPCLR_DOM,map=rowMeans(cbind(chr_spec_dom[[i]]$winstart,chr_spec_dom[[i]]$winend)),smoothness=100,plotRaw=TRUE,plotWindows=TRUE,method=4)
-dom_win[[i]]=domSpline$windowData[,c("WindowStart","WindowStop")]
-
-impSpline=splineAnalyze(Y=chr_spec_imp[[i]]$XPCLR_DOM,map=rowMeans(cbind(chr_spec_imp[[i]]$winstart,chr_spec_imp[[i]]$winend)),smoothness=100,plotRaw=TRUE,plotWindows=TRUE,method=4)
-imp_win[[i]]=impSpline$windowData[,c("WindowStart","WindowStop")]
-
+    impSpline=splineAnalyze(Y=chr_spec_imp[[i]]$XPCLR_DOM,map=rowMeans(cbind(chr_spec_imp[[i]]$winstart,chr_spec_imp[[i]]$winend)),smoothness=100,plotRaw=F,plotWindows=F,method=4)
+    imp_win[[i]]=impSpline$windowData[,c("WindowStart","WindowStop")]
     
 }
 
+##########################compute correlation between recombination rate and window size
+#take the midpoint of spined-window to represent each XP-CLR region and map back to original window in paper
 
+
+result=NULL
+for(i in 1:chrNum){
+    theseDomWinMidPoint=rowMeans(dom_win[[i]])
+    theseDomRecomBiRate=NULL
+    for(j in 1:length(theseDomWinMidPoint)){
+        thisDomRecomBiRate=intersect(which(chr_spec_dom[[i]]$winstart <= theseDomWinMidPoint[j]),which(chr_spec_dom[[i]]$winend >= theseDomWinMidPoint[j] ))
+    }
+    
+    theseImpWinMidPoint=rowMeans(imp_win[[i]])
+    
+} 
+ 
 save.image("xpclr.RData")
