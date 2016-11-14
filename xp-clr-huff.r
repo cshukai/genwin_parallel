@@ -9,8 +9,8 @@
 #####################input & data preprocessing##################
 #read data
 d=read.table("Hufford_et_al._2012_10kb_statistics.txt",sep="\t",header=T)
-d_dom=d[which(!is.na(d[,"XPCLR_DOM"])),]
-d_imp=d[which(!is.na(d[,"XPCLR_IMP"])),]
+d_dom=d[intersect(which(!is.na(d[,"XPCLR_DOM"])),which(!is.na(d[,"rho_MZ"]))),]
+d_imp=d[intersect(which(!is.na(d[,"XPCLR_IMP"])),which(!is.na(d[,"rho_MZ"]))),]
 #sort for later spline fit
 d_dom_sorted=d_dom[order(d_dom$winstart),]
 d_imp_sorted=d_imp[order(d_imp$winstart),]
@@ -33,7 +33,7 @@ for(i in 1:chrNum){
     domSpline=splineAnalyze(Y=chr_spec_dom[[i]]$XPCLR_DOM,map=rowMeans(cbind(chr_spec_dom[[i]]$winstart,chr_spec_dom[[i]]$winend)),smoothness=100,plotRaw=F,plotWindows=F,method=4)
     dom_win[[i]]=domSpline$windowData[,c("WindowStart","WindowStop")]
 
-    impSpline=splineAnalyze(Y=chr_spec_imp[[i]]$XPCLR_DOM,map=rowMeans(cbind(chr_spec_imp[[i]]$winstart,chr_spec_imp[[i]]$winend)),smoothness=100,plotRaw=F,plotWindows=F,method=4)
+    impSpline=splineAnalyze(Y=chr_spec_imp[[i]]$XPCLR_IMP,map=rowMeans(cbind(chr_spec_imp[[i]]$winstart,chr_spec_imp[[i]]$winend)),smoothness=100,plotRaw=F,plotWindows=F,method=4)
     imp_win[[i]]=impSpline$windowData[,c("WindowStart","WindowStop")]
     
 }
@@ -46,12 +46,48 @@ result=NULL
 for(i in 1:chrNum){
     theseDomWinMidPoint=rowMeans(dom_win[[i]])
     theseDomRecomBiRate=NULL
+    dom_rm_idx=NULL
     for(j in 1:length(theseDomWinMidPoint)){
-        thisDomRecomBiRate=intersect(which(chr_spec_dom[[i]]$winstart <= theseDomWinMidPoint[j]),which(chr_spec_dom[[i]]$winend >= theseDomWinMidPoint[j] ))
-    }
+        if(length(intersect(which(chr_spec_dom[[i]]$winstart <= theseDomWinMidPoint[j]),which(chr_spec_dom[[i]]$winend >= theseDomWinMidPoint[j] )))==0){
+           dom_rm_idx=c(dom_rm_idx,j)
+           next
+        }
+    
+        thisDomRecomBiRate=chr_spec_dom[[i]][intersect(which(chr_spec_dom[[i]]$winstart <= theseDomWinMidPoint[j]),which(chr_spec_dom[[i]]$winend >= theseDomWinMidPoint[j] )),"rho_MZ"]
+        
+    
+            
+        
+        theseDomRecomBiRate=c(theseDomRecomBiRate,thisDomRecomBiRate)
+        
+    }   
+    #print(length(theseDomWinMidPoint))
+    #print(length(theseDomRecomBiRate))
+    theseDomWinMidPoint=theseDomWinMidPoint[-dom_rm_idx]
+    this_pearson_dom=cor(theseDomWinMidPoint,theseDomRecomBiRate)
+    this_spearman_dom=cor(theseDomWinMidPoint,theseDomRecomBiRate,method="spearman")
     
     theseImpWinMidPoint=rowMeans(imp_win[[i]])
+    theseImpRecomBiRate=NULL
+    imp_rm_idx=NULL
+    for(j in 1:length(theseImpWinMidPoint)){
+        if(length(intersect(which(chr_spec_imp[[i]]$winstart <= theseImpWinMidPoint[j]),which(chr_spec_imp[[i]]$winend >= theseImpWinMidPoint[j] )))==0){
+            imp_rm_idx=c(imp_rm_idx,j)
+            next
+        }
+       
+        thisImpRecomBiRate=chr_spec_imp[[i]][intersect(which(chr_spec_imp[[i]]$winstart <= theseImpWinMidPoint[j]),which(chr_spec_imp[[i]]$winend >= theseImpWinMidPoint[j] )),"rho_MZ"]
+        theseImpRecomBiRate=c(theseImpRecomBiRate,thisImpRecomBiRate)
+    }
+    theseImpWinMidPoint=theseImpWinMidPoint[-imp_rm_idx]
+    #print(length(theseImpWinMidPoint))
+    #print(length(theseImpRecomBiRate))
+    this_pearson_Imp=cor(theseImpWinMidPoint,theseImpRecomBiRate)
+    this_spearman_Imp=cor(theseImpWinMidPoint,theseImpRecomBiRate,method="spearman")
     
+    thisRow=c(i,this_pearson_dom,this_spearman_dom,this_pearson_Imp,this_spearman_Imp)
+    result=rbind(result,thisRow)
 } 
  
-save.image("xpclr.RData")
+  #colnames(result)=c("chr","DOM_Pearson","DOM_Spearman","Imp_Pearson","IMP_Spearman")
+#save.image("xpclr.RData")
