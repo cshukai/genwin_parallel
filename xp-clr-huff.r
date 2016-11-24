@@ -89,5 +89,6 @@ for(i in 1:chrNum){
     result=rbind(result,thisRow)
 } 
  
-  #colnames(result)=c("chr","DOM_Pearson","DOM_Spearman","Imp_Pearson","IMP_Spearman")
-#save.image("xpclr.RData")
+ colnames(result)=c("chr","DOM_Pearson","DOM_Spearman","Imp_Pearson","IMP_Spearman")
+save.image("xpclr.RData")
+write.csv(result,"xpclr_recombination.csv",row.names=F)
