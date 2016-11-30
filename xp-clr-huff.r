@@ -58,7 +58,7 @@ for(i in 1:chrNum){
     this_spearman_dom=cor(theseGenWinSize,theseDomRecomBiRate,method="spearman")
     this_chr=paste("chr",i,sep=" ")
     plot(x=theseGenWinSize,y=theseDomRecomBiRate,xlab="GenWin Window Size", ylab="Rho",main=this_chr,sub="domestic")
-    abline(lm(theseDomRecomBiRate ~ theseGenWinSize))
+    abline(lm(theseDomRecomBiRate ~ theseGenWinSize),col="red")
     
     #imp correlation
     theseGenWinSize=imp_win[[i]][,"WindowStop"]-imp_win[[i]][,"WindowStart"]
@@ -82,7 +82,7 @@ for(i in 1:chrNum){
     this_pearson_Imp=cor(theseGenWinSize,theseImpRecomBiRate)
     this_spearman_Imp=cor(theseGenWinSize,theseImpRecomBiRate,method="spearman")
     plot(x=theseGenWinSize,y=theseImpRecomBiRate,xlab="GenWin Window Size", ylab="Rho",main=this_chr,sub="improved")
-    abline(lm(theseImpRecomBiRate ~ theseGenWinSize))
+    abline(lm(theseImpRecomBiRate ~ theseGenWinSize),col="red")
     thisRow=c(i,this_pearson_dom,this_spearman_dom,this_pearson_Imp,this_spearman_Imp)
     result=rbind(result,thisRow)
 } 
