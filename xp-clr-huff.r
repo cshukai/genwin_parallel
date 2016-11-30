@@ -34,7 +34,7 @@ for(i in 1:chrNum){
 ##########################compute correlation between recombination rate and window size
 #take the midpoint of spined-window to represent each XP-CLR region and map back to original window in paper
 
-
+pdf("winsize_vs_rho.pdf")
 result=NULL
 for(i in 1:chrNum){
    #dom correlation
@@ -56,8 +56,9 @@ for(i in 1:chrNum){
     theseGenWinSize=theseGenWinSize[-dom_rm_idx]
     this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate)
     this_spearman_dom=cor(theseGenWinSize,theseDomRecomBiRate,method="spearman")
-    
-    
+    this_chr=paste("chr",i,sep=" ")
+    plot(x=theseGenWinSize,y=theseDomRecomBiRate,xlab="GenWin Window Size", ylab="Rho",main=this_chr,sub="domestic")
+    abline(lm(theseDomRecomBiRate ~ theseGenWinSize))
     
     #imp correlation
     theseGenWinSize=imp_win[[i]][,"WindowStop"]-imp_win[[i]][,"WindowStart"]
@@ -72,6 +73,7 @@ for(i in 1:chrNum){
        
         thisImpRecomBiRate=chr_spec_imp[[i]][intersect(which(chr_spec_imp[[i]]$winstart <= theseImpWinMidPoint[j]),which(chr_spec_imp[[i]]$winend >= theseImpWinMidPoint[j] )),"rho_MZ"]
         theseImpRecomBiRate=c(theseImpRecomBiRate,thisImpRecomBiRate)
+        
     }
     print(length(imp_rm_idx)/length(theseGenWinSize))
 
@@ -79,11 +81,16 @@ for(i in 1:chrNum){
 
     this_pearson_Imp=cor(theseGenWinSize,theseImpRecomBiRate)
     this_spearman_Imp=cor(theseGenWinSize,theseImpRecomBiRate,method="spearman")
-    
+    plot(x=theseGenWinSize,y=theseImpRecomBiRate,xlab="GenWin Window Size", ylab="Rho",main=this_chr,sub="improved")
+    abline(lm(theseImpRecomBiRate ~ theseGenWinSize))
     thisRow=c(i,this_pearson_dom,this_spearman_dom,this_pearson_Imp,this_spearman_Imp)
     result=rbind(result,thisRow)
 } 
- 
- colnames(result)=c("chr","DOM_Pearson","DOM_Spearman","Imp_Pearson","IMP_Spearman")
+dev.off() 
+colnames(result)=c("chr","DOM_Pearson","DOM_Spearman","Imp_Pearson","IMP_Spearman")
 save.image("xpclr.RData")
 write.csv(result,"xpclr_recombination.csv",row.names=F)
+
+
+##############################to do ######################
+# 1. map midpoint of  xp-clr region back to genwin window
