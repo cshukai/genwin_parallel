@@ -55,6 +55,8 @@ for(i in 1:chrNum){
     print(length(dom_rm_idx)/length(theseGenWinSize))
     theseGenWinSize=theseGenWinSize[-dom_rm_idx]
     this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate)
+    this_pearson_dom_test=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "greater")
+    
     this_spearman_dom=cor(theseGenWinSize,theseDomRecomBiRate,method="spearman")
     this_chr=paste("chr",i,sep=" ")
     plot(x=theseGenWinSize,y=theseDomRecomBiRate,xlab="GenWin Window Size", ylab="Rho",main=this_chr,sub="domestic")
