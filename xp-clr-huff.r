@@ -56,8 +56,13 @@ for(i in 1:chrNum){
     theseGenWinSize=theseGenWinSize[-dom_rm_idx]
     this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate)
     this_pearson_dom_test=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "greater")
+    this_pearson_dom_pv=this_pearson_dom_test$p.value
     
     this_spearman_dom=cor(theseGenWinSize,theseDomRecomBiRate,method="spearman")
+    this_spearman_dom_test=cor.test(theseGenWinSize,theseDomRecomBiRate,method="spearman",alternative = "greater")
+    this_spearnman_dom_pv=this_spearman_dom_test$p.value
+
+
     this_chr=paste("chr",i,sep=" ")
     plot(x=theseGenWinSize,y=theseDomRecomBiRate,xlab="GenWin Window Size", ylab="Rho",main=this_chr,sub="domestic")
     abline(lm(theseDomRecomBiRate ~ theseGenWinSize),col="red")
@@ -83,13 +88,20 @@ for(i in 1:chrNum){
 
     this_pearson_Imp=cor(theseGenWinSize,theseImpRecomBiRate)
     this_spearman_Imp=cor(theseGenWinSize,theseImpRecomBiRate,method="spearman")
+    
+    this_pearson_imp_test=cor.test(theseGenWinSize,theseImpRecomBiRate,method="pearson",alternative = "greater")
+    this_pearson_imp_pv=this_pearson_imp_test$p.value
+    this_spearman_imp_test=cor.test(theseGenWinSize,theseImpRecomBiRate,method="spearman",alternative = "greater")
+    this_spearnman_imp_pv=this_spearman_imp_test$p.value
+    
+    
     plot(x=theseGenWinSize,y=theseImpRecomBiRate,xlab="GenWin Window Size", ylab="Rho",main=this_chr,sub="improved")
     abline(lm(theseImpRecomBiRate ~ theseGenWinSize),col="red")
-    thisRow=c(i,this_pearson_dom,this_spearman_dom,this_pearson_Imp,this_spearman_Imp)
+    thisRow=c(i,this_pearson_dom,this_pearson_dom_pv,this_spearman_dom, this_spearnman_dom_pv ,this_pearson_Imp,this_pearson_imp_pv,this_spearman_Imp,this_spearnman_imp_pv)
     result=rbind(result,thisRow)
 } 
 dev.off() 
-colnames(result)=c("chr","DOM_Pearson","DOM_Spearman","Imp_Pearson","IMP_Spearman")
+colnames(result)=c("chr","DOM_Pearson","pv","DOM_Spearman","pv","Imp_Pearson","pv","IMP_Spearman","pv")
 save.image("xpclr.RData")
 write.csv(result,"xpclr_recombination.csv",row.names=F)
 
