@@ -63,9 +63,9 @@ for(j in 1:length(popgen_metrics)){
 
         this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate)
         
-        this_pearson_dom_test_left=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "less")
-        this_pearson_dom_test_right=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "greater")
-        this_pearson_dom_test_two=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "two.sided")
+        this_pearson_dom_test_left=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "less")$p.value
+        this_pearson_dom_test_right=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "greater")$p.value
+        this_pearson_dom_test_two=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "two.sided")$p.value
         #this_pearson_dom_pv=this_pearson_dom_test$p.value
         thisRow=c(k,this_pearson_dom,this_pearson_dom_test_left,this_pearson_dom_test_right,this_pearson_dom_test_two)
         result=rbind(result,thisRow)
