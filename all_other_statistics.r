@@ -43,15 +43,24 @@ for(j in 1:length(popgen_metrics)){
          dom_rm_idx=NULL
          for(m in 1:length(theseDomWinMidPoint)){
            if(length(intersect(which(d_chr_spec[[k]]$winstart <= theseDomWinMidPoint[m]),which(d_chr_spec[[k]]$winend >= theseDomWinMidPoint[m] )))==0){
-             dom_rm_idx=c(dom_rm_idx,j)
+             dom_rm_idx=c(dom_rm_idx,m)
              next
            }
+              thisDomRecomBiRate=d_chr_spec[[k]][intersect(which(d_chr_spec[[k]]$winstart <= theseDomWinMidPoint[m]),which(d_chr_spec[[k]]$winend >= theseDomWinMidPoint[m] )),rhoIdx]
+              theseDomRecomBiRate=c(theseDomRecomBiRate,thisDomRecomBiRate)
+           
          }
-    
-        thisDomRecomBiRate=d_chr_spec[[k]][intersect(which(d_chr_spec[[k]]$winstart <= theseDomWinMidPoint[m]),which(d_chr_spec[[k]]$winend >= theseDomWinMidPoint[m] )),rhoIdx]
-        theseDomRecomBiRate=c(theseDomRecomBiRate,thisDomRecomBiRate)
+     
+     
         theseGenWinSize=theseGenWinSize[-dom_rm_idx]
-        
+        print("---")
+        print(length(dom_rm_idx))
+        print("---")
+        print(length(theseGenWinSize))
+        print("---")
+        print(length(theseDomRecomBiRate))
+        print("---")
+
         this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate)
         
         this_pearson_dom_test_left=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "less")
