@@ -32,10 +32,12 @@ for(j in 1:length(popgen_metrics)){
      ##2. skip if no corresponding windows can be map or no corresponding rho value exisit
      ##3. take the corresponding rho values
      ##4. compute correlations and significance test 
-    result=NULL
+    
     for( i in 1:length(recombi_measures)){
+    
       fileNameTemp=paste(popgen_metrics[j],recombi_measures[i],sep="_")    
       rhoIdx=which(colnames(d) == recombi_measures[i])
+      result=NULL
       for(k in 1:chrNum){
          theseGenWinSize=wins[[k]][,"WindowStop"]-wins[[k]][,"WindowStart"]
          theseDomWinMidPoint=rowMeans(wins[[k]]) 
@@ -51,8 +53,17 @@ for(j in 1:length(popgen_metrics)){
            
          }
      
-     
-        theseGenWinSize=theseGenWinSize[-dom_rm_idx]
+        if(!is.null(dom_rm_idx)){
+            theseGenWinSize=theseGenWinSize[-dom_rm_idx]
+        }
+        
+        
+        rho_na_idx=which(is.na(theseDomRecomBiRate))
+        if(!is.null(rho_na_idx)){
+            theseGenWinSize=theseGenWinSize[-rho_na_idx]
+            theseDomRecomBiRate=theseDomRecomBiRate[-rho_na_idx]
+        }
+        
         print("---")
         print(length(dom_rm_idx))
         print("---")
@@ -61,7 +72,7 @@ for(j in 1:length(popgen_metrics)){
         print(length(theseDomRecomBiRate))
         print("---")
 
-        this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate)
+        this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate) #theseDomRecomBiRate contains NA values now so cor can't be computed
         
         this_pearson_dom_test_left=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "less")$p.value
         this_pearson_dom_test_right=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "greater")$p.value
@@ -69,11 +80,11 @@ for(j in 1:length(popgen_metrics)){
         #this_pearson_dom_pv=this_pearson_dom_test$p.value
         thisRow=c(k,this_pearson_dom,this_pearson_dom_test_left,this_pearson_dom_test_right,this_pearson_dom_test_two)
         result=rbind(result,thisRow)
-        colnames(result)=c("chr","correlation","pv_less","pv_greater","pv","pv")
+        colnames(result)=c("chr","correlation","pv_less","pv_greater","pv_two_side")
         csv_filename=paste(fileNameTemp,"csv",sep=".")
         write.csv(result,csv_filename,row.names=F)
 
     }
-  }    
+   }    
     
 }
