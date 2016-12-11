@@ -73,14 +73,20 @@ for(j in 1:length(popgen_metrics)){
         print("---")
 
         this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate) #theseDomRecomBiRate contains NA values now so cor can't be computed
-        
+        this_spearman_dom=cor(theseGenWinSize,theseDomRecomBiRate) #theseDomRecomBiRate contains NA values now so cor can't be computed
         this_pearson_dom_test_left=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "less")$p.value
         this_pearson_dom_test_right=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "greater")$p.value
         this_pearson_dom_test_two=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "two.sided")$p.value
+        this_spearman_dom_test_left=cor.test(theseGenWinSize,theseDomRecomBiRate,method="spearman",alternative = "less")$p.value
+        this_spearman_dom_test_right=cor.test(theseGenWinSize,theseDomRecomBiRate,method="spearman",alternative = "greater")$p.value
+        this_spearman_dom_test_two=cor.test(theseGenWinSize,theseDomRecomBiRate,method="spearman",alternative = "two.sided")$p.value
+        
+        
+        
         #this_pearson_dom_pv=this_pearson_dom_test$p.value
-        thisRow=c(k,this_pearson_dom,this_pearson_dom_test_left,this_pearson_dom_test_right,this_pearson_dom_test_two)
+        thisRow=c(k,this_pearson_dom,this_pearson_dom_test_left,this_pearson_dom_test_right,this_pearson_dom_test_two,this_spearman_dom,this_spearman_dom_test_left,this_spearman_dom_test_right,this_spearman_dom_test_two)
         result=rbind(result,thisRow)
-        colnames(result)=c("chr","correlation","pv_less","pv_greater","pv_two_side")
+        colnames(result)=c("chr","pearson","pv_less","pv_greater","pv_two_side","spearman","pv_less","pv_greater","pv_two_side")
         csv_filename=paste(fileNameTemp,"csv",sep=".")
         write.csv(result,csv_filename,row.names=F)
 
