@@ -73,7 +73,7 @@ for(j in 1:length(popgen_metrics)){
         print("---")
 
         this_pearson_dom=cor(theseGenWinSize,theseDomRecomBiRate) #theseDomRecomBiRate contains NA values now so cor can't be computed
-        this_spearman_dom=cor(theseGenWinSize,theseDomRecomBiRate) #theseDomRecomBiRate contains NA values now so cor can't be computed
+        this_spearman_dom=cor(theseGenWinSize,theseDomRecomBiRate,method="spearman") #theseDomRecomBiRate contains NA values now so cor can't be computed
         this_pearson_dom_test_left=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "less")$p.value
         this_pearson_dom_test_right=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "greater")$p.value
         this_pearson_dom_test_two=cor.test(theseGenWinSize,theseDomRecomBiRate,method="pearson",alternative = "two.sided")$p.value
