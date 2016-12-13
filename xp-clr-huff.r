@@ -106,5 +106,61 @@ save.image("xpclr.RData")
 write.csv(result,"xpclr_recombination.csv",row.names=F)
 
 
-##############################to do ######################
-# 1. map midpoint of  xp-clr region back to genwin window
+#combine chromosome
+allWindowSize=NULL
+allDomCombinationRate=NULL
+for(i in 1:chrNum){
+   #dom correlation
+    theseGenWinSize=dom_win[[i]][,"WindowStop"]-dom_win[[i]][,"WindowStart"]
+    theseDomWinMidPoint=rowMeans(dom_win[[i]])
+    theseDomRecomBiRate=NULL
+    dom_rm_idx=NULL
+    for(j in 1:length(theseDomWinMidPoint)){
+        if(length(intersect(which(chr_spec_dom[[i]]$winstart <= theseDomWinMidPoint[j]),which(chr_spec_dom[[i]]$winend >= theseDomWinMidPoint[j] )))==0){
+           dom_rm_idx=c(dom_rm_idx,j)
+           next
+        }
+    
+        thisDomRecomBiRate=chr_spec_dom[[i]][intersect(which(chr_spec_dom[[i]]$winstart <= theseDomWinMidPoint[j]),which(chr_spec_dom[[i]]$winend >= theseDomWinMidPoint[j] )),"rho_MZ"]
+        theseDomRecomBiRate=c(theseDomRecomBiRate,thisDomRecomBiRate)
+        
+    }   
+    theseGenWinSize=theseGenWinSize[-dom_rm_idx]
+    allWindowSize=c(allWindowSize,theseGenWinSize)
+    allDomCombinationRate=c(allDomCombinationRate,theseDomRecomBiRate)
+}
+all_dom_pearson=cor(allDomCombinationRate,allWindowSize)
+all_dom_spearman=cor(allDomCombinationRate,allWindowSize,method="spearman")
+all_dom_pearson_test=cor.test(allDomCombinationRate,allWindowSize,method="pearson",alternative="greater")
+all_dom_spearman_test=cor.test(allDomCombinationRate,allWindowSize,method="spearman",alternative="greater")
+
+allWindowSize=NULL
+allImpCombinationRate=NULL
+for(i in 1:chrNum){
+    #imp correlation
+    theseGenWinSize=imp_win[[i]][,"WindowStop"]-imp_win[[i]][,"WindowStart"]
+    theseImpWinMidPoint=rowMeans(imp_win[[i]])
+    theseImpRecomBiRate=NULL
+    imp_rm_idx=NULL
+    for(j in 1:length(theseImpWinMidPoint)){
+        if(length(intersect(which(chr_spec_imp[[i]]$winstart <= theseImpWinMidPoint[j]),which(chr_spec_imp[[i]]$winend >= theseImpWinMidPoint[j] )))==0){
+            imp_rm_idx=c(imp_rm_idx,j)
+            next
+        }
+       
+        thisImpRecomBiRate=chr_spec_imp[[i]][intersect(which(chr_spec_imp[[i]]$winstart <= theseImpWinMidPoint[j]),which(chr_spec_imp[[i]]$winend >= theseImpWinMidPoint[j] )),"rho_MZ"]
+        theseImpRecomBiRate=c(theseImpRecomBiRate,thisImpRecomBiRate)
+        
+    }
+
+    theseGenWinSize=theseGenWinSize[-imp_rm_idx]
+    allWindowSize=c(allWindowSize,theseGenWinSize)
+    allImpCombinationRate=c(allImpCombinationRate,theseImpRecomBiRate)
+   
+} 
+
+
+all_imp_pearson=cor(allImpCombinationRate,allWindowSize)
+all_imp_spearman=cor(allImpCombinationRate,allWindowSize,method="spearman")
+all_imp_pearson_test=cor.test(allImpCombinationRate,allWindowSize,method="pearson",alternative="greater")
+all_imp_spearman_test=cor.test(allImpCombinationRate,allWindowSize,method="spearman",alternative="greater")
