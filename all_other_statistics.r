@@ -146,6 +146,6 @@ for(i in 1:length(csvFiles)){
         }
         
         if(!is.null(nice.pearson)){
-           write.csv(nice.pearson,thisSpearName,row.names=F)
+           write.csv(nice.pearson,thisPeasonName,row.names=F)
         }
 }
