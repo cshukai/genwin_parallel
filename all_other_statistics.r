@@ -94,3 +94,58 @@ for(j in 1:length(popgen_metrics)){
    }    
     
 }
+
+csvFiles=Sys.glob("*.csv")
+
+for(i in 1:length(csvFiles)){
+    thisCsv=read.csv(csvFiles[i])
+    nice.pearson=NULL
+    nice.spearman=NULL
+    for(j in 1:nrow(thisCsv)){
+        this_spearman=thisCsv[j,"spearman"]
+        this_pearson=thisCsv[j,"pearson"]
+        print(this_spearman)
+        print(this_pearson)
+        if(this_pearson>0){
+            if(thisCsv[j,"pv_greater"]<=0.05){
+                 nice.pearson=rbind(nice.pearson,c(j,this_pearson,thisCsv[j,"pv_greater"]))
+            }
+            
+        }
+        
+        if(this_pearson<0){
+            if(thisCsv[j,"pv_less"]<=0.05){
+                 nice.pearson=rbind(nice.pearson,c(j,this_pearson,thisCsv[j,"pv_less"]))
+            }
+            
+        }
+        
+        if(this_spearman>0){
+            if(thisCsv[j,"pv_greater.1"]<=0.05){
+                 nice.spearman=rbind(nice.spearman,c(j,this_spearman,thisCsv[j,"pv_greater.1"]))
+            }
+            
+        }
+        
+        if(this_spearman<0){
+            if(thisCsv[j,"pv_less.1"]<=0.05){
+                 nice.spearman=rbind(nice.spearman,c(j,this_spearman,thisCsv[j,"pv_less.1"]))
+            }
+            
+        }
+    
+        
+        
+    }
+    
+        thisSpearName=paste(csvFiles[i],"spearman.csv",sep=".")
+        thisPeasonName=paste(csvFiles[i],"pearson.csv",sep=".")
+    
+      if(!is.null(nice.spearman)){
+           write.csv(nice.spearman,thisSpearName,row.names=F)
+        }
+        
+        if(!is.null(nice.pearson)){
+           write.csv(nice.pearson,thisSpearName,row.names=F)
+        }
+}
