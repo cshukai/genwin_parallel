@@ -164,7 +164,7 @@ for(i in 1:length(resultFiles)){
     thisResult=read.csv(resultFiles[i])
    
     for(j in 1:nrow(thisResult)){
-        bigTable=rbind(bigTable,c(thisResult[j,],metric,cor_type,rhoSpecies))
+        bigTable=rbind(bigTable,cbind(thisResult[j,],metric,cor_type,rhoSpecies))
     }
 }
 
