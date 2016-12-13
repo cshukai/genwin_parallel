@@ -149,3 +149,24 @@ for(i in 1:length(csvFiles)){
            write.csv(nice.pearson,thisPeasonName,row.names=F)
         }
 }
+
+
+resultFiles=Sys.glob("*csv*.csv") 
+bigTable=NULL
+for(i in 1:length(resultFiles)){
+    metric=unlist(strsplit(x=resultFiles[i],split="_rho"))[1]
+    
+    cor_type=gsub(x=unlist(strsplit(x=resultFiles[i],split="csv"))[2],pattern="\\.",replacement="")
+    
+    tmp= unlist(strsplit(x=resultFiles[i],split="rho"))[2]
+    rhoSpecies=sub(x=unlist(strsplit(x=tmp,split=".csv"))[1],pattern="_",replacement="")
+    
+    thisResult=read.csv(resultFiles[i])
+   
+    for(j in 1:nrow(thisResult)){
+        bigTable=rbind(bigTable,c(thisResult[j,],metric,cor_type,rhoSpecies))
+    }
+}
+
+colnames(bigTable)=c("chr","correlation","pv","metrics","correlation_typ","rho_species")
+write.csv(bigTable,"bigTable.csv",row.names=F)
