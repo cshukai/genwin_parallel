@@ -164,3 +164,46 @@ all_imp_pearson=cor(allImpCombinationRate,allWindowSize)
 all_imp_spearman=cor(allImpCombinationRate,allWindowSize,method="spearman")
 all_imp_pearson_test=cor.test(allImpCombinationRate,allWindowSize,method="pearson",alternative="greater")
 all_imp_spearman_test=cor.test(allImpCombinationRate,allWindowSize,method="spearman",alternative="greater")
+
+############################compute correlation between rho and lamda (smoothing parameter)###########
+ library(pspline)
+ roots <- function(data) {
+        data1 <- c(NA, data[1:{
+            length(data) - 1
+        }])
+        data2 <- data
+        posneg <- which(data1 > 0 & data2 < 0) - 0.5
+        negpos <- which(data1 < 0 & data2 > 0) - 0.5
+        zero <- which(data == 0)
+        roots <- sort(c(posneg, negpos, zero))
+        return(roots)
+        }
+
+
+
+# for automation , column 4 is for fst , column 5 for rho
+# this process assume every chromsome has at least 6 windows given the norder is 2 
+d_rho_mz_Flrmz=d[intersect(which(!is.na(d[,"fst_LR_mz"])),which(!is.na(d[,"rho_MZ"]))),c("chr","winstart","winend","fst_LR_mz","rho_MZ")]
+d_rho_lr_Flrmz=d[intersect(which(!is.na(d[,"fst_LR_mz"])),which(!is.na(d[,"rho_LR"]))),c("chr","winstart","winend","fst_LR_mz","rho_LR")]
+
+table_list=list(d_rho_mz_Flrmz,d_rho_lr_Flrmz)
+for(j in 1:length(table_list)){
+    this.d=table_list[[j]]
+    d_sorted=this.d[order(this.d$winstart),]
+    
+    for(k in 1:chrNum){
+     this.d.this.chr=d_sorted[which(d_sorted[,"chr"]==k),]
+     for(i in 1:nrow(this.d.this.chr)){
+         input=this.d.this.chr[i:(i+5),]
+         map=rowMeans(input[,c("winstart","winend")])
+         fst=input[,4]
+         pspline_gcv = smooth.Pspline(map,fst, norder = 2, method = 3)     
+         gcv_lamda=pspline_gcv$spar
+         pspline_ocv = smooth.Pspline(map,fst, norder = 2, method = 4)     
+         ocv_lamda=pspline_ocv$spar    
+     }
+    }
+        
+     
+}
+  
