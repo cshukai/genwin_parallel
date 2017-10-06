@@ -181,11 +181,14 @@ all_imp_spearman_test=cor.test(allImpCombinationRate,allWindowSize,method="spear
 
 
 
-# for automation , column 4 is for fst , column 5 for rho
-# this process assume every chromsome has at least 6 windows given the norder is 2 
+#for automation , column 4 is for fst , column 5 for rho
+#this process assume every chromsome has at least 6 windows given the norder is 2 
+#preprocessing
 d_rho_mz_Flrmz=d[intersect(which(!is.na(d[,"fst_LR_mz"])),which(!is.na(d[,"rho_MZ"]))),c("chr","winstart","winend","fst_LR_mz","rho_MZ")]
 d_rho_lr_Flrmz=d[intersect(which(!is.na(d[,"fst_LR_mz"])),which(!is.na(d[,"rho_LR"]))),c("chr","winstart","winend","fst_LR_mz","rho_LR")]
 
+# compute lamda
+result_rho_lamda=NULL
 table_list=list(d_rho_mz_Flrmz,d_rho_lr_Flrmz)
 for(j in 1:length(table_list)){
     this.d=table_list[[j]]
@@ -194,16 +197,28 @@ for(j in 1:length(table_list)){
     for(k in 1:chrNum){
      this.d.this.chr=d_sorted[which(d_sorted[,"chr"]==k),]
      for(i in 1:nrow(this.d.this.chr)){
-         input=this.d.this.chr[i:(i+5),]
-         map=rowMeans(input[,c("winstart","winend")])
-         fst=input[,4]
-         pspline_gcv = smooth.Pspline(map,fst, norder = 2, method = 3)     
-         gcv_lamda=pspline_gcv$spar
-         pspline_ocv = smooth.Pspline(map,fst, norder = 2, method = 4)     
-         ocv_lamda=pspline_ocv$spar    
+      if((i+5)<=nrow(this.d.this.chr)){
+          input=this.d.this.chr[i:(i+5),]
+          map=rowMeans(input[,c("winstart","winend")])
+          fst=input[,4]
+          pspline_gcv = smooth.Pspline(map,fst, norder = 2, method = 3)     
+          gcv_lamda=pspline_gcv$spar
+          pspline_ocv = smooth.Pspline(map,fst, norder = 2, method = 4)     
+          ocv_lamda=pspline_ocv$spar 
+          this.rho.name=colnames(input)[5]
+          this.fst.name=colnames(input)[4]
+          this.rho.avg=mean(input[,5])
+          this.fst.avg=mean(input[,4])
+          this.result=c(k,input[1,"winstart"],input[nrow(input),"winend"],this.fst.avg,this.rho.avg,gcv_lamda,ocv_lamda)
+      }
+          
+      }
+         
+         
      }
     }
         
      
 }
   
+save.image("xpclr.RData")
