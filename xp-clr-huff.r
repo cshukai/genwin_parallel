@@ -186,10 +186,12 @@ all_imp_spearman_test=cor.test(allImpCombinationRate,allWindowSize,method="spear
 #preprocessing
 d_rho_mz_Flrmz=d[intersect(which(!is.na(d[,"fst_LR_mz"])),which(!is.na(d[,"rho_MZ"]))),c("chr","winstart","winend","fst_LR_mz","rho_MZ")]
 d_rho_lr_Flrmz=d[intersect(which(!is.na(d[,"fst_LR_mz"])),which(!is.na(d[,"rho_LR"]))),c("chr","winstart","winend","fst_LR_mz","rho_LR")]
+d_rho_teo_Fteomz=d[intersect(which(!is.na(d[,"fst_teo_mz"])),which(!is.na(d[,"rho_teo"]))),c("chr","winstart","winend","fst_teo_mz","rho_teo")]
+d_rho_mz_Fteomz=d[intersect(which(!is.na(d[,"fst_teo_mz"])),which(!is.na(d[,"rho_MZ"]))),c("chr","winstart","winend","fst_teo_mz","rho_MZ")]
 
 # compute lamda
 result_rho_lamda=NULL
-table_list=list(d_rho_mz_Flrmz,d_rho_lr_Flrmz)
+table_list=list(d_rho_mz_Flrmz,d_rho_lr_Flrmz,d_rho_teo_Fteomz,d_rho_mz_Fteomz)
 for(j in 1:length(table_list)){
     this.d=table_list[[j]]
     d_sorted=this.d[order(this.d$winstart),]
@@ -207,18 +209,21 @@ for(j in 1:length(table_list)){
           ocv_lamda=pspline_ocv$spar 
           this.rho.name=colnames(input)[5]
           this.fst.name=colnames(input)[4]
+          this.label=paste(this.rho.name,this.fst.name,sep=":")
           this.rho.avg=mean(input[,5])
           this.fst.avg=mean(input[,4])
-          this.result=c(k,input[1,"winstart"],input[nrow(input),"winend"],this.fst.avg,this.rho.avg,gcv_lamda,ocv_lamda)
-      }
-          
+          this.result=c(k,input[1,"winstart"],input[nrow(input),"winend"],this.fst.avg,this.rho.avg,gcv_lamda,ocv_lamda,this.label)
+          result_rho_lamda=rbind(result_rho_lamda,this.result)
+        }
+          i=i+5
       }
          
          
      }
+      
     }
         
-     
+  colnames(result_rho_lamda)=c("chr","winstart","winend","fst_avg","rho_avg","lamda_gcv","lamda_ocv","source")   
 }
   
 save.image("xpclr.RData")
