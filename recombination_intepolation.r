@@ -17,3 +17,18 @@ for(i in 1:nrow(rec)){
      }
   }
 }
+#transform accumulative centimorgan so that all centimorgan values are positive
+colnames(rec2)=c("p.rs.","chr","start","end","cM")
+
+chrNum=10
+for(i in 1:length(chrNum)){
+  these_cm=rec[which(rec[,"chr"]==i),"cM"]
+  if(min(these_cm)<1){
+     mag=1-min(these_cm)
+     for(j in 1:nrow(rec2)){
+        if(rec2[j,"chr"]==i){
+           rec2[j,"cM"]=rec2[j,"cM"]+mag
+        }
+     }
+  }
+}
