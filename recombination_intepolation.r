@@ -32,3 +32,27 @@ for(i in 1:length(chrNum)){
      }
   }
 }
+
+
+#map window to markers with FST values
+windows=NULL
+for(i in 1:nrow(rec2)){
+  this_chr=rec2[i,"chr"]
+  this_cm=rec2[i,"cM"]
+  this_target=fst[which(fst[,"Chromosome"]==this_chr),]
+  
+  win_start=rec2[i,"start"]
+  win_end=rec2[i,"end"]
+  fst_mapped=NULL
+  for(j in 1:nrow(this_target)){
+     if(this_target[j,"Position"]>=win_start && this_target[j,"Position"]<win_end){
+       windows=rbind(i,this_chr,win_start,win_end,this_cm,this_target[j,"Position"],this_target[,"Fst"])
+     }
+  }
+  
+
+    
+  
+  
+}
+# fit genwin to every window
