@@ -36,14 +36,11 @@ for(i in 1:chrNum){
 
 #map window to markers with FST values
 library(doSNOW)
-threads= 5
+threads= 11
 cl=makeCluster(threads)
 registerDoSNOW(cl)
-
-
 windows=NULL
-foreach(i = 1:nrow(rec2))  %dopar% {
-  this_chr=rec2[i,"chr"]
+foreach(i = 1:nrow(rec2))  %dopar% {  this_chr=rec2[i,"chr"]
   this_cm=rec2[i,"cM"]
   this_target=fst[which(fst[,"Chromosome"]==this_chr),]
   
@@ -52,15 +49,14 @@ foreach(i = 1:nrow(rec2))  %dopar% {
   fst_mapped=NULL
   for(j in 1:nrow(this_target)){
      if(this_target[j,"Position"]>=win_start && this_target[j,"Position"]<win_end){
-       windows=rbind(i,this_chr,win_start,win_end,this_cm,this_target[j,"Position"],this_target[,"Fst"])
+       windows=rbind(windows,c(i,this_chr,win_start,win_end,this_cm,this_target[j,"Position"],this_target[,"Fst"]))
      }
   }
-  
 
+}
+# fit genwin to every window
     
   
-  
-}
 stopCluster(cl)
 
 # fit genwin to every window
