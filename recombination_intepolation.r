@@ -21,7 +21,7 @@ for(i in 1:nrow(rec)){
 colnames(rec2)=c("p.rs.","chr","start","end","cM")
 
 chrNum=10
-for(i in 1:length(chrNum)){
+for(i in 1:chrNum){
   these_cm=rec[which(rec[,"chr"]==i),"cM"]
   if(min(these_cm)<1){
      mag=1-min(these_cm)
